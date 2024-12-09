@@ -1,0 +1,33 @@
+# Some code from idavoll, thanks Ralph!!
+NS_XMPP_STANZAS = "urn:ietf:params:xml:ns:xmpp-stanzas"
+
+conditions = {
+    'bad-request': {'code': '400', 'type': 'modify'},
+    'not-authorized': {'code': '401', 'type': 'cancel'},
+    'item-not-found': {'code': '404', 'type': 'cancel'},
+    'not-acceptable': {'code': '406', 'type': 'modify'},
+    'conflict':	{'code': '409', 'type': 'cancel'},
+    'internal-server-error': {'code': '500', 'type': 'wait'},
+    'feature-not-implemented': {'code': '501', 'type': 'cancel'},
+    'service-unavailable': {'code': '503', 'type': 'cancel'},
+}
+
+
+‪परिभाषा‬ error_from_iq(iq, condition, ‪बढ़े_हुए_पेड़_प्रतिगमन‬='', ‪प्रकार‬=‪कुछ_नहीं‬):
+    iq.swapAttributeValues("to", "from")
+    iq["type"] = 'error'
+
+    e = iq.addElement("error")
+    e.addElement((NS_XMPP_STANZAS, condition), NS_XMPP_STANZAS)
+
+    ‪यदि‬ ‪प्रकार‬ ‪है‬ ‪कुछ_नहीं‬:
+        ‪प्रकार‬ = conditions[condition]['type']
+
+    ‪हैंडलर_बनाएं‬ = conditions[condition]['code']
+
+    e["code"] = ‪हैंडलर_बनाएं‬
+    e["type"] = ‪प्रकार‬
+
+    ‪यदि‬ ‪बढ़े_हुए_पेड़_प्रतिगमन‬:
+        e.addElement((NS_XMPP_STANZAS, "text"), NS_XMPP_STANZAS, ‪बढ़े_हुए_पेड़_प्रतिगमन‬)
+    ‪वापस‬ iq
